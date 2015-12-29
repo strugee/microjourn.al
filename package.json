@@ -14,8 +14,5 @@
     "morgan": "~1.6.1",
     "serve-favicon": "~2.3.0",
     "stylus": "0.42.3"
-  },
-  "devDependencies": {
-    "concat-stream": "^1.5.1"
   }
 }

@@ -23,11 +23,8 @@
 
 var express = require('express');
 var router = express.Router();
-var concat = require('concat-stream');
 var db = require('../lib/mongo');
 var Moment = require('../lib/moment');
-
-//var concat = require('concat-stream');
 
 router.get('/', function(req, res) {
 	res.send('Got a GET request for /moment/');
@@ -60,55 +57,39 @@ router.get('/:id', function(req, res) {
 });
 
 router.post('/', function(req, res, params) {
-	req.pipe(concat(function(buf) {
-		var data;
-		debugger;
-		try {
-			data = JSON.parse(buf.toString());
-		} catch (e) {
-			if (e instanceof SyntaxError) {
-				res.writeHead(400);
-				res.end(e.toString());
-				return;
-			} else {
-				res.writeHead(500);
-				res.end(e.toString(), function() {
-					throw e;
-				});
-			}
+	// sanity checks
+
+	if (!req.body.timestamp) {
+		res.setHeader('Content-Type', 'text/plain');
+		res.writeHead(400);
+		res.end('Expected a "timestamp" key.');
+		return;
+	}
+
+	if (!req.body.content) {
+		res.setHeader('Content-Type', 'text/plain');
+		res.writeHead(400);
+		res.end('Expected a "content" key.');
+		return;
+	}
+
+	var moment = new Moment({
+		timestamp: req.body.timestamp,
+		content: req.body.content
+	});
+
+	moment.save(function(err) {
+		if (err) {
+			res.writeHead(500);
+			res.end(err.toString(), function() {
+				throw err;
+			});
+			return;
 		}
 
-		// sanity checks
-
-		if (!data.timestamp) {
-			res.setHeader('Content-Type', 'text/plain');
-			res.writeHead(400);
-			res.end('Expected a "timestamp" key.');
-		}
-
-		if (!data.content) {
-			res.setHeader('Content-Type', 'text/plain');
-			res.writeHead(400);
-			res.end('Expected a "content" key.');
-		}
-
-		var moment = new Moment({
-			timestamp: data.timestamp,
-			content: data.content
-		});
-
-		moment.save(function(err) {
-			if (err) {
-				res.writeHead(500);
-				res.end(err.toString(), function() {
-					throw err;
-				});
-			}
-
-			res.writeHead(201);
-			res.end('{"id":' + 'unknown' + '}');
-		});
-	}));
+		res.writeHead(201);
+		res.end('{"id":' + 'unknown' + '}');
+	});
 });
 
 module.exports = router;
