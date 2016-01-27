@@ -31,29 +31,20 @@ router.get('/', function(req, res) {
 });
 
 router.get('/:id', function(req, res) {
-	// TODO
+	Moment.get(req.params.id, function(err, moment) {
+		if (err) {
+			res.setHeader('Content-Type', 'text/plain');
+			res.writeHead(500);
+			res.end(err.toString(), function() {
+				throw err;
+			});
+			return;
+		}
 
-	// db.get('SELECT * FROM moments WHERE id = ?;', req.params.id, function(err, row) {
-	// 	if (err) {
-	// 		res.writeHead(500);
-	// 		res.end(err.toString(), function() {
-	// 			throw err;
-	// 		});
-	// 	} else if (row === undefined) {
-	// 		res.writeHead(404);
-	// 		res.end();
-	// 	} else {
-	// 		res.writeHead(200);
-	// 		res.write('{"active":');
-	// 		if (row['active'] === 0) {
-	// 			res.write('true');
-	// 		} else {
-	// 			res.write('false');
-	// 		}
-	// 		res.write(',"name":"' + row['name'] + '"}');
-	// 		res.end();
-	// 	}
-	// });
+		res.setHeader('Content-Type', 'application/json');
+		res.writeHead(200);
+		res.end(moment.id);
+	});
 });
 
 router.post('/', function(req, res, params) {
@@ -73,12 +64,14 @@ router.post('/', function(req, res, params) {
 		return;
 	}
 
+	// TODO deal with user stuff
+
 	var moment = new Moment({
 		timestamp: req.body.timestamp,
 		content: req.body.content
 	});
 
-	moment.save(function(err) {
+	moment.save(function(err, momentDoc) {
 		if (err) {
 			res.writeHead(500);
 			res.end(err.toString(), function() {
@@ -88,7 +81,7 @@ router.post('/', function(req, res, params) {
 		}
 
 		res.writeHead(201);
-		res.end('{"id":' + 'unknown' + '}');
+		res.end('{"id":' + momentDoc.id + '}');
 	});
 });
 
