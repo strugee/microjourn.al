@@ -50,6 +50,13 @@ router.get('/:id', function(req, res) {
 router.post('/', function(req, res, params) {
 	// sanity checks
 
+	if (!req.headers.authorization) {
+		res.setHeader('Content-Type', 'text/plain');
+		res.writeHead(401);
+		res.end('Expected an Authorization header.');
+		return;
+	}
+
 	if (!req.body.timestamp) {
 		res.setHeader('Content-Type', 'text/plain');
 		res.writeHead(400);
