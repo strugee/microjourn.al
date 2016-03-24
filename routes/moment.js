@@ -30,36 +30,6 @@ router.get('/', function(req, res) {
 	res.send('Got a GET request for /moment/');
 });
 
-router.get('/:id', function(req, res) {
-	Moment.findById(req.params.id, function(err, moment) {
-		if (err) {
-			res.setHeader('Content-Type', 'text/plain');
-			res.writeHead(500);
-			res.end(err.toString(), function() {
-				throw err;
-			});
-			return;
-		}
-
-		if (!moment) {
-			res.writeHead(404);
-			// TODO write something useful to the response body
-			res.end();
-			return;
-		}
-
-		var response = {};
-
-		response.id = moment._id;
-		response.content = moment.content || '';
-		response.timestamp = moment.timestamp;
-
-		res.setHeader('Content-Type', 'application/json');
-		res.writeHead(200);
-		res.end(JSON.stringify(response));
-	});
-});
-
 router.post('/', function(req, res, params) {
 	// sanity checks
 
@@ -102,6 +72,36 @@ router.post('/', function(req, res, params) {
 
 		res.writeHead(201);
 		res.end('{"id":' + momentDoc.id + '}');
+	});
+});
+
+router.get('/:id', function(req, res) {
+	Moment.findById(req.params.id, function(err, moment) {
+		if (err) {
+			res.setHeader('Content-Type', 'text/plain');
+			res.writeHead(500);
+			res.end(err.toString(), function() {
+				throw err;
+			});
+			return;
+		}
+
+		if (!moment) {
+			res.writeHead(404);
+			// TODO write something useful to the response body
+			res.end();
+			return;
+		}
+
+		var response = {};
+
+		response.id = moment._id;
+		response.content = moment.content || '';
+		response.timestamp = moment.timestamp;
+
+		res.setHeader('Content-Type', 'application/json');
+		res.writeHead(200);
+		res.end(JSON.stringify(response));
 	});
 });
 
