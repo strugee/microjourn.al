@@ -105,4 +105,38 @@ router.get('/:id', function(req, res) {
 	});
 });
 
+router.delete('/:id', function(req, res) {
+	Moment.findById(req.params.id, function(err, moment) {
+		if (err) {
+			res.setHeader('Content-Type', 'text/plain');
+			res.writeHead(500);
+			res.end(err.toString(), function() {
+				throw err;
+			});
+			return;
+		}
+
+		if (!moment) {
+			res.writeHead(404);
+			// TODO write something useful to the response body
+			res.end();
+			return;
+		}
+
+		moment.remove(function(err) {
+			if (err) {
+				res.setHeader('Content-Type', 'text/plain');
+				res.writeHead(500);
+				res.end(err.toString(), function() {
+					throw err;
+				});
+				return;
+			}
+
+			res.writeHead(204);
+			res.end();
+		});
+	});
+});
+
 module.exports = router;
