@@ -41,6 +41,13 @@ router.get('/:id', function(req, res) {
 			return;
 		}
 
+		if (!moment) {
+			res.writeHead(404);
+			// TODO write something useful to the response body
+			res.end();
+			return;
+		}
+
 		res.setHeader('Content-Type', 'application/json');
 		res.writeHead(200);
 		res.end(moment.id);
