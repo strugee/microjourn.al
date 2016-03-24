@@ -31,7 +31,7 @@ router.get('/', function(req, res) {
 });
 
 router.get('/:id', function(req, res) {
-	Moment.get(req.params.id, function(err, moment) {
+	Moment.findById(req.params.id, function(err, moment) {
 		if (err) {
 			res.setHeader('Content-Type', 'text/plain');
 			res.writeHead(500);
@@ -48,9 +48,15 @@ router.get('/:id', function(req, res) {
 			return;
 		}
 
+		var response = {};
+
+		response.id = moment._id;
+		response.content = moment.content || '';
+		response.timestamp = moment.timestamp;
+
 		res.setHeader('Content-Type', 'application/json');
 		res.writeHead(200);
-		res.end(moment.id);
+		res.end(JSON.stringify(response));
 	});
 });
 
