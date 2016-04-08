@@ -32,7 +32,7 @@ router.use(requireAuth);
 
 router.get('/', function(req, res) {
 	// TODO
-	res.send('Got a GET request for /moment/');
+	res.send('Got a GET request for /moments/');
 });
 
 router.post('/', function(req, res, params) {
