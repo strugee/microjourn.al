@@ -27,6 +27,8 @@ var db = require('../lib/mongo');
 var Moment = require('../lib/moment');
 var requireAuth = require('../lib/requireAuth');
 var methodNotAllowed = require('../lib/methodNotAllowed');
+var sanityCheck = require('../lib/momentSanityCheck');
+var createMoment = require('../lib/createMoment');
 
 router.use(requireAuth);
 
@@ -35,42 +37,14 @@ router.get('/', function(req, res) {
 	res.send('Got a GET request for /moments/');
 });
 
-router.post('/', function(req, res, params) {
+router.post('/', function(req, res, next) {
 	// sanity checks
 
-	if (!req.body.timestamp) {
-		res.setHeader('Content-Type', 'text/plain');
-		res.writeHead(400);
-		res.end('Expected a "timestamp" key.');
+	if (!sanityCheck(req, res)) {
 		return;
 	}
 
-	if (!req.body.content) {
-		res.setHeader('Content-Type', 'text/plain');
-		res.writeHead(400);
-		res.end('Expected a "content" key.');
-		return;
-	}
-
-	// TODO deal with user stuff
-
-	var moment = new Moment({
-		timestamp: req.body.timestamp,
-		content: req.body.content
-	});
-
-	moment.save(function(err, momentDoc) {
-		if (err) {
-			res.writeHead(500);
-			res.end(err.toString(), function() {
-				throw err;
-			});
-			return;
-		}
-
-		res.writeHead(201);
-		res.end('{"id":' + momentDoc.id + '}');
-	});
+	createMoment(req, res, next);
 });
 
 router.all('/', methodNotAllowed);
