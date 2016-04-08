@@ -114,6 +114,50 @@ router.delete('/:id', function(req, res, next) {
 	});
 });
 
+router.put('/:id', function(req, res, next) {
+	// sanity checks
+
+	if (!sanityCheck(req, res)) {
+		return;
+	}
+
+	// Try to find an existing moment first - important because status codes
+	Moment.findById(req.params.id, function(err, moment) {
+		if (err) {
+			res.setHeader('Content-Type', 'text/plain');
+			res.writeHead(500);
+			res.end(err.toString(), function() {
+				throw err;
+			});
+			return;
+		}
+
+		if (!moment) {
+			// Reconciling ObjectIDs with custom moment names is difficult, so for now we punt
+			// This is TODO
+			res.writeHead(405);
+			res.end('Cannot create moment with custom name');
+			return;
+		}
+
+		// There was an existing moment, so we update it
+		moment.timestamp = req.body.timestamp;
+		moment.content = req.body.content;
+
+		moment.save(function(err, momentDoc) {
+			if (err) {
+				res.writeHead(500);
+				res.end(err.toString(), function() {
+					throw err;
+				});
+			}
+
+			res.writeHead(204);
+			res.end();
+		});
+	});
+});
+
 // TODO: handle 405 Method Not Allowed
 
 module.exports = router;
