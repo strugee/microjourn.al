@@ -49,7 +49,7 @@ router.post('/', function(req, res, next) {
 
 router.all('/', methodNotAllowed);
 
-router.get('/:id', function(req, res) {
+router.get('/:id', function(req, res, next) {
 	Moment.findById(req.params.id, function(err, moment) {
 		if (err) {
 			res.setHeader('Content-Type', 'text/plain');
@@ -79,7 +79,8 @@ router.get('/:id', function(req, res) {
 	});
 });
 
-router.delete('/:id', function(req, res) {
+router.delete('/:id', function(req, res, next) {
+	// TODO: should this return 410 Gone?
 	Moment.findById(req.params.id, function(err, moment) {
 		if (err) {
 			res.setHeader('Content-Type', 'text/plain');
