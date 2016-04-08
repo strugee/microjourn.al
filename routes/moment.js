@@ -26,10 +26,12 @@ var router = express.Router();
 var db = require('../lib/mongo');
 var Moment = require('../lib/moment');
 var requireAuth = require('../lib/requireAuth');
+var methodNotAllowed = require('../lib/methodNotAllowed');
 
 router.use(requireAuth);
 
 router.get('/', function(req, res) {
+	// TODO
 	res.send('Got a GET request for /moment/');
 });
 
@@ -70,6 +72,8 @@ router.post('/', function(req, res, params) {
 		res.end('{"id":' + momentDoc.id + '}');
 	});
 });
+
+router.all('/', methodNotAllowed);
 
 router.get('/:id', function(req, res) {
 	Moment.findById(req.params.id, function(err, moment) {
@@ -134,5 +138,7 @@ router.delete('/:id', function(req, res) {
 		});
 	});
 });
+
+// TODO: handle 405 Method Not Allowed
 
 module.exports = router;
