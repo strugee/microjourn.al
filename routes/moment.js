@@ -25,6 +25,9 @@ var express = require('express');
 var router = express.Router();
 var db = require('../lib/mongo');
 var Moment = require('../lib/moment');
+var requireAuth = require('../lib/requireAuth');
+
+router.use(requireAuth);
 
 router.get('/', function(req, res) {
 	res.send('Got a GET request for /moment/');
@@ -32,13 +35,6 @@ router.get('/', function(req, res) {
 
 router.post('/', function(req, res, params) {
 	// sanity checks
-
-	if (!req.headers.authorization) {
-		res.setHeader('Content-Type', 'text/plain');
-		res.writeHead(401);
-		res.end('Expected an Authorization header.');
-		return;
-	}
 
 	if (!req.body.timestamp) {
 		res.setHeader('Content-Type', 'text/plain');
