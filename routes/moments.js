@@ -52,11 +52,7 @@ router.all('/', methodNotAllowed);
 router.get('/:id', function(req, res, next) {
 	Moment.findById(req.params.id, function(err, moment) {
 		if (err) {
-			res.setHeader('Content-Type', 'text/plain');
-			res.writeHead(500);
-			res.end(err.toString(), function() {
-				throw err;
-			});
+			next(err);
 			return;
 		}
 
@@ -83,11 +79,7 @@ router.delete('/:id', function(req, res, next) {
 	// TODO: should this return 410 Gone?
 	Moment.findById(req.params.id, function(err, moment) {
 		if (err) {
-			res.setHeader('Content-Type', 'text/plain');
-			res.writeHead(500);
-			res.end(err.toString(), function() {
-				throw err;
-			});
+			next(err);
 			return;
 		}
 
@@ -100,11 +92,7 @@ router.delete('/:id', function(req, res, next) {
 
 		moment.remove(function(err) {
 			if (err) {
-				res.setHeader('Content-Type', 'text/plain');
-				res.writeHead(500);
-				res.end(err.toString(), function() {
-					throw err;
-				});
+				next(err);
 				return;
 			}
 
@@ -124,11 +112,7 @@ router.put('/:id', function(req, res, next) {
 	// Try to find an existing moment first - important because status codes
 	Moment.findById(req.params.id, function(err, moment) {
 		if (err) {
-			res.setHeader('Content-Type', 'text/plain');
-			res.writeHead(500);
-			res.end(err.toString(), function() {
-				throw err;
-			});
+			next(err);
 			return;
 		}
 
@@ -146,10 +130,8 @@ router.put('/:id', function(req, res, next) {
 
 		moment.save(function(err, momentDoc) {
 			if (err) {
-				res.writeHead(500);
-				res.end(err.toString(), function() {
-					throw err;
-				});
+				next(err);
+				return;
 			}
 
 			res.writeHead(204);
