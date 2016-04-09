@@ -23,7 +23,9 @@
 
 var assert = require('assert');
 var http = require('http');
+var url = require('url');
 var concat = require('concat-stream');
+var request = require('superagent');
 var startApp = require('./lib/start-app.js');
 
 var server;
@@ -40,25 +42,109 @@ module.exports = {
 	'/moment route': {
 		'unauthorized request rejection': {
 			'should return the proper status code': function(done) {
-				http.get('http://localhost:52472/moments/', function(res) {
+				request.get('http://localhost:52472/moments/').end(function(err, res) {
 					assert.equal(res.statusCode, 401);
 					done();
 				});
 			},
 			'should return the proper Content-Type': function(done) {
-				http.get('http://localhost:52472/moments/', function(res) {
+				request.get('http://localhost:52472/moments/').end(function(err, res) {
 					assert.equal(res.headers['content-type'], 'text/plain');
 					done();
 				});
 			},
 			'should return the proper response body message': function(done) {
-				http.get('http://localhost:52472/moments/', function(res) {
-					res.pipe(concat(function(buf) {
-						assert.equal(buf.toString(), 'Expected an Authorization header.');
-						done();
-					}));
+				request.get('http://localhost:52472/moments/').end(function(err, res) {
+					assert.equal(res.text, 'Expected an Authorization header.');
+					done();
 				});
 			}
+		},
+		'GET on a nonexistant resource': {
+			'should return the proper status code': function(done) {
+				request.get('http://localhost:52472/moments/', function(err, res) {
+					assert.equal(res.statusCode, 401);
+					done();
+				});
+			},
+			'should return the proper Content-Type': function(done) {
+				request.get('http://localhost:52472/moments/', function(err, res) {
+					assert.equal(res.headers['content-type'], 'text/plain');
+					done();
+				});
+			}
+		},
+		'POST to /moments/ without a timestamp key': {
+			'should return the proper status code': null,
+			'should return the proper Content-Type': null,
+			'should include the proper response body message': null
+		},
+		'POST to /moments/ without a content key': {
+			'should return the proper status code': null,
+			'should return the proper Content-Type': null,
+			'should include the proper response body message': null
+		},
+		'POST to /moments/': {
+			'should return the proper status code': null,
+			'should return the proper Content-Type': null,
+			'should return parseable JSON in the body': null,
+			'should include the id in the body': null
+		},
+		'GET from /moments/:id': {
+			'should return the proper status code': null,
+			'should return the proper Content-Type': null,
+			'should return parseable JSON in the body': null,
+			'should include the id in the body': null,
+			'should include the content in the body': null,
+			'should include the timestamp in the body': null
+		},
+		'HEAD from /moments/:id': {
+			'should return the proper status code': null,
+			'should return the proper Content-Type': null,
+			'should return parseable JSON in the body': null,
+			'should return an empty body': null
+		},
+		'POST to /moments/:id': {
+			'should return the proper status code': null,
+			'should return the proper Content-Type': null
+		},
+		'CONNECT to /moments/:id': {
+			'should return the proper status code': null,
+			'should return the proper Content-Type': null,
+			'should return the proper response body message': null
+		},
+		'PUT to /moments/:id without a timestamp key': {
+			'should return the proper status code': null,
+			'should return the proper Content-Type': null,
+			'should return the proper response body message': null
+		},
+		'PUT to /moments/:id without a timestamp key': {
+			'should return the proper status code': null,
+			'should return the proper Content-Type': null,
+			'should return the proper response body message': null
+		},
+		'PUT to /moments/:id': {
+			'should return the proper status code': null,
+			'should not return a Content-Type': null,
+			'should return an empty body': null
+		},
+		'GET to /moments/:id after PUT': {
+			'should include the id in the body': null,
+			'should include the new content in the body': null,
+			'should include the new timestamp in the body': null
+		},
+		'DELETE to /moments/:id': {
+			'should return the proper status code': null,
+			'should not return a Content-Type': null,
+			'should return an empty body': null
+		},
+		'GET to /moments/:id after DELETE': {
+			'should return the proper status code': null
+		},
+		'PUT to a non-existant /moments/:id': {
+			'should return the proper status code': null,
+			'should return the proper Content-Type': null,
+			'should return the proper response body message': null
 		}
 	}
 };

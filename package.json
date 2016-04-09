@@ -16,6 +16,8 @@
     "stylus": "0.42.3"
   },
   "devDependencies": {
-    "mocha": "^2.4.5"
+    "mocha": "^2.4.5",
+    "mocha-ui-exports": "^0.2.2",
+    "superagent": "^1.8.3"
   }
 }
