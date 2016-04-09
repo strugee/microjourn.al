@@ -23,23 +23,42 @@
 
 var assert = require('assert');
 var http = require('http');
+var concat = require('concat-stream');
 var startApp = require('./lib/start-app.js');
 
 var server;
 
-before('setup the app', function() {
-	server = startApp();
-});
+module.exports = {
+	before: function() {
+		server = startApp();
+	},
 
-after('tear down the app', function() {
-	server.close();
-});
+	after: function() {
+		server.close();
+	},
 
-describe('/moment route', function() {
-	it('should reject unauthorized requests', function(done) {
-		http.get('http://localhost:52472/moment/', function(res) {
-			assert.isEqual(res.body, 'Expected an Authorization header.');
-			done();
-		});
-	});
-});
+	'/moment route': {
+		'unauthorized request rejection': {
+			'should return the proper status code': function(done) {
+				http.get('http://localhost:52472/moments/', function(res) {
+					assert.equal(res.statusCode, 401);
+					done();
+				});
+			},
+			'should return the proper Content-Type': function(done) {
+				http.get('http://localhost:52472/moments/', function(res) {
+					assert.equal(res.headers['content-type'], 'text/plain');
+					done();
+				});
+			},
+			'should return the proper response body message': function(done) {
+				http.get('http://localhost:52472/moments/', function(res) {
+					res.pipe(concat(function(buf) {
+						assert.equal(buf.toString(), 'Expected an Authorization header.');
+						done();
+					}));
+				});
+			}
+		}
+	}
+};

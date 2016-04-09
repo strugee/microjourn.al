@@ -21,6 +21,8 @@
 
 // test/lib/start-app.js - set up the app for testing
 
+process.env['NODE_ENV'] = 'test';
+
 var app = require('../../app.js');
 
 function start(cb) {
