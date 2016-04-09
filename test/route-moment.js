@@ -23,8 +23,6 @@
 
 var assert = require('assert');
 var http = require('http');
-var url = require('url');
-var concat = require('concat-stream');
 var request = require('superagent');
 var startApp = require('./lib/start-app.js');
 
