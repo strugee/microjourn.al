@@ -32,9 +32,47 @@ var createMoment = require('../lib/createMoment');
 
 router.use(requireAuth);
 
-router.get('/', function(req, res) {
-	// TODO
-	res.send('Got a GET request for /moments/');
+router.get('/', function(req, res, next) {
+	// TODO: limit query to user
+
+	var query = Moment.find({});
+
+	query.setOptions({
+		sort: {
+			timestamp: -1
+		}
+	});
+
+	if (req.query.num) {
+		var num = Number(req.query.num);
+
+		if (Number.isNaN(num) || !Number.isInteger(num)) {
+			res.writeHead(400);
+			res.end(req.query.num + ' is not an integer');
+			return;
+		}
+
+		query = query.limit(num);
+	}
+
+	query.exec(function(err, docs) {
+		if (err) {
+			next(err);
+			return;
+		}
+
+		var response = [];
+
+		docs.forEach(function(doc) {
+			response.push({
+				id: doc.id,
+				timestamp: doc.timestamp,
+				content: doc.content
+			});
+		});
+
+		res.end(JSON.stringify(response));
+	});
 });
 
 router.post('/', function(req, res, next) {
